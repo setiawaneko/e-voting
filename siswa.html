@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">Pemilihan Ketua OSIS</h1>
+        
+        <div id="login-section">
+            <label class="block text-sm font-medium text-gray-700">Masukkan NISN Anda</label>
+            <input type="number" id="nisn" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Contoh: 00678123">
+            <button onclick="checkVoter()" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Masuk ke Bilik Suara</button>
+        </div>
+
+        <div id="vote-section" class="hidden">
+            <p class="text-sm text-gray-500 mb-4">Halo, Pemilih <span id="display-nisn" class="font-bold"></span></p>
+            <div class="space-y-4">
+                <button onclick="submitVote('Kandidat 01')" class="w-full border-2 border-gray-200 p-4 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition text-left">
+                    <span class="block font-bold">01. Andi & Budi</span>
+                    <span class="text-xs text-gray-500">Visi: Mewujudkan sekolah digital yang inklusif.</span>
+                </button>
+                <button onclick="submitVote('Kandidat 02')" class="w-full border-2 border-gray-200 p-4 rounded-xl hover:border-green-500 hover:bg-green-50 transition text-left">
+                    <span class="block font-bold">02. Citra & Dewi</span>
+                    <span class="text-xs text-gray-500">Visi: Meningkatkan kreativitas melalui seni dan olahraga.</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkVoter() {
+            const nisn = document.getElementById('nisn').value;
+            if(nisn.length < 5) return alert("NISN tidak valid!");
+            
+            // Simulasi Anti-Kecurangan (Cek LocalStorage)
+            if(localStorage.getItem('hasVoted_' + nisn)) {
+                alert("Maaf, NISN ini sudah digunakan untuk memilih!");
+            } else {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('vote-section').classList.remove('hidden');
+                document.getElementById('display-nisn').innerText = nisn;
+            }
+        }
+
+        function submitVote(candidate) {
+            const nisn = document.getElementById('display-nisn').innerText;
+            const voteData = {
+                nisn: nisn,
+                choice: candidate,
+                timestamp: new Date().toLocaleString(),
+                browser: navigator.userAgent.substring(0, 50) // Deteksi Device (Anti-Fraud)
+            };
+
+            // Simpan data (Simulasi Database menggunakan LocalStorage)
+            let allVotes = JSON.parse(localStorage.getItem('votes') || "[]");
+            allVotes.push(voteData);
+            localStorage.setItem('votes', JSON.stringify(allVotes));
+            localStorage.setItem('hasVoted_' + nisn, true);
+
+            alert("Terima kasih! Suara Anda untuk " + candidate + " telah direkam.");
+            location.reload();
+        }
+    </script>
+</body>
+</html>
